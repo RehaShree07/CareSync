@@ -1,0 +1,1002 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CareSync AI — Smart Patient Care</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--navy:#102a35;--teal:#087f80;--mint:#dff5ec;--bg:#f4f7f8;--white:#fff;--text:#203640;--muted:#788991;--line:#e4ebee;--shadow:0 8px 30px #15333e09}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #78c9c1;outline-offset:2px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--navy);color:white;position:fixed;inset:0 auto 0 0;padding:25px 16px;display:flex;flex-direction:column;z-index:20;overflow:auto}
+.brand{display:flex;gap:11px;align-items:center;padding:0 9px 30px}
+.brand-icon{height:43px;width:43px;background:#a6e9d3;border-radius:14px;display:grid;place-items:center;color:var(--navy);font-size:26px;font-weight:800}
+.brand h2{font:800 20px Manrope,sans-serif;letter-spacing:-.7px}
+.brand small{display:block;font-size:9px;color:#a9c4cc;letter-spacing:1.3px;margin-top:4px}
+.nav-label{font-size:10px;color:#78949f;letter-spacing:1.5px;font-weight:700;padding:15px 12px 9px}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;border:0;background:transparent;color:#b8cbd0;border-radius:10px;text-align:left;margin-bottom:4px}
+.nav-btn:hover,.nav-btn.active{background:#244955;color:white}
+.nav-btn.active{box-shadow:inset 3px 0 #81e2c1}
+.nav-btn .ico{width:22px;text-align:center;font-size:18px}
+.demo-note{margin-top:auto;background:#1b3d48;border:1px solid #31525b;border-radius:12px;padding:14px;color:#d6e5e8;font-size:11px;line-height:1.8}
+.demo-note strong{color:#a7ecd2}
+.main{margin-left:250px;width:calc(100% - 250px);min-width:0}
+.topbar{height:75px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;position:sticky;top:0;z-index:10}
+.breadcrumb{font-size:12px;color:var(--muted)}.breadcrumb strong{color:var(--text)}
+.top-right{display:flex;align-items:center;gap:15px}
+.demo-pill{background:#fff3dd;color:#94672a;border-radius:20px;padding:7px 12px;font-size:10px;font-weight:700}
+.avatar{height:39px;width:39px;border-radius:50%;background:var(--mint);color:var(--teal);display:grid;place-items:center;font-weight:800}
+.mobile-toggle{display:none;border:0;background:white;font-size:23px}
+.content{max-width:1600px;padding:31px 34px 50px;margin:auto}
+.page{display:none;animation:appear .22s ease}.page.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:25px}
+.eyebrow{font-size:10px;color:var(--teal);font-weight:800;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:9px}
+h1,h2,h3{font-family:Manrope,sans-serif}
+h1{font-size:29px;letter-spacing:-1.1px;line-height:1.3}
+.page-head p{color:var(--muted);margin-top:8px;line-height:1.7;font-size:12px}
+h2{font-size:17px;letter-spacing:-.4px}h3{font-size:14px}
+.btn{border:1px solid var(--line);border-radius:9px;padding:10px 15px;background:white;color:var(--text);font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn:hover{border-color:#80bdb8;transform:translateY(-1px)}
+.btn-primary{background:var(--teal);border-color:var(--teal);color:white}.btn-primary:hover{background:#086b6d;color:white}
+.btn-small{padding:7px 10px;font-size:11px}
+.btn-danger{color:#c55b5b}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:var(--shadow);min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:19px}
+.card-head p{color:var(--muted);font-size:11px;margin-top:6px}
+.grid{display:grid;gap:18px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.metric{padding:19px}.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-icon{width:38px;height:38px;border-radius:11px;background:#e4f5ef;display:grid;place-items:center;color:var(--teal);font-size:19px}
+.metric-label{font-size:11px;color:var(--muted);font-weight:600}
+.metric-value{font:800 25px Manrope,sans-serif;margin:17px 0 6px;letter-spacing:-1px}
+.metric-foot{font-size:10px;color:var(--muted)}
+.section-gap{margin-top:22px}
+.banner{background:var(--navy);color:white;border-radius:17px;padding:28px 30px;position:relative;overflow:hidden}
+.banner:after{content:"";position:absolute;width:200px;height:200px;border:35px solid #99e9ce12;border-radius:50%;right:-40px;top:-75px}
+.banner h2{font-size:23px;margin-bottom:9px}.banner p{color:#c4d8dc;max-width:580px;line-height:1.8;font-size:12px}
+.banner .btn{margin-top:18px}
+.notice{padding:13px 15px;border-radius:9px;background:#fff7e9;border:1px solid #f0e0bf;color:#89662e;font-size:11px;line-height:1.8}
+.info-notice{background:#eef7f8;border-color:#d5e8e9;color:#476a72}
+.field{margin-bottom:15px}.field label{display:block;font-size:11px;font-weight:700;margin-bottom:7px;color:#435a64}
+.field input,.field select,.field textarea,.searchbox input{width:100%;border:1px solid #dce5e8;border-radius:8px;padding:11px 12px;background:white;color:var(--text);font-size:12px}
+.field textarea{min-height:90px;resize:vertical}
+.form-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.form-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:15px}
+.searchbox{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:white;border-radius:9px;padding-left:12px;min-width:150px}
+.searchbox input{border:0;outline:none;min-width:0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.toolbar select,.toolbar input[type=date]{border:1px solid var(--line);border-radius:8px;background:white;padding:10px;font-size:11px;color:var(--text)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px;background:#f9fbfb}
+td,th{padding:14px 12px;border-bottom:1px solid #edf1f2;font-size:11px}
+td{color:#425761}tbody tr:hover{background:#fbfdfd}
+.amount{font-weight:800;color:var(--navy)}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:5px 9px;font-size:10px;font-weight:700;background:#eef2f4;color:#61737a}
+.badge-green{background:#e6f6ef;color:#237c5a}.badge-orange{background:#fff3df;color:#a66f27}.badge-red{background:#ffeded;color:#b84f4f}.badge-blue{background:#eaf2ff;color:#466ba8}
+.bar-row{display:grid;grid-template-columns:110px 1fr 78px;align-items:center;gap:12px;margin:19px 0}
+.bar-label{font-size:11px;color:#61737a}.bar-track{height:8px;background:#edf2f3;border-radius:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:10px;background:var(--teal);transition:width .3s}.bar-value{text-align:right;font-size:11px;font-weight:700}
+.upload-zone{border:1.5px dashed #a9c8c8;border-radius:14px;padding:32px 20px;text-align:center;background:#f8fcfb;cursor:pointer;transition:.2s}
+.upload-zone:hover,.upload-zone.drag{background:#eaf8f3;border-color:var(--teal)}
+.upload-symbol{width:52px;height:52px;background:#dff5ed;color:var(--teal);border-radius:15px;margin:0 auto 14px;display:grid;place-items:center;font-size:23px}
+.upload-zone h3{margin-bottom:8px}.upload-zone p{font-size:11px;color:var(--muted);line-height:1.8}
+.doc-list{display:flex;flex-direction:column;gap:11px}
+.doc-item{display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);border-radius:11px;min-width:0}
+.file-icon{height:43px;min-width:42px;border-radius:10px;background:#fff0ef;color:#c85f5f;display:grid;place-items:center;font-size:11px;font-weight:800}
+.doc-info{min-width:0;flex:1}.doc-info strong{font-size:12px;display:block;overflow-wrap:anywhere}
+.doc-info small{display:block;color:var(--muted);margin-top:6px;font-size:10px;line-height:1.5}
+.doc-actions{display:flex;gap:5px;flex-wrap:wrap}
+.icon-btn{border:1px solid var(--line);border-radius:7px;background:white;padding:7px;color:#63767e;font-size:12px}
+.icon-btn:hover{background:var(--mint);color:var(--teal)}
+.empty{text-align:center;padding:30px 15px;color:var(--muted);font-size:12px;line-height:1.8}
+.empty-icon{font-size:27px;margin-bottom:10px;color:#91b9b6}
+.doctor-card{border:1px solid var(--line);border-radius:13px;padding:18px;transition:.2s;background:white}
+.doctor-card:hover{border-color:#b2d6cf;box-shadow:var(--shadow);transform:translateY(-2px)}
+.doctor-avatar{width:55px;height:55px;border-radius:15px;background:#e1f3ef;color:var(--teal);display:grid;place-items:center;font-size:23px;font-weight:800}
+.doctor-top{display:flex;gap:12px;align-items:center}.doctor-top h3{margin-bottom:5px}
+.doctor-top p,.doctor-meta{font-size:11px;color:var(--muted);line-height:1.7}
+.doctor-meta{margin:17px 0;display:flex;flex-wrap:wrap;gap:9px}
+.doctor-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:13px;border-top:1px solid var(--line)}
+.doctor-fee{font-weight:800;font-size:17px}.doctor-fee small{font-size:10px;color:var(--muted);font-weight:400}
+.profile-avatar{height:74px;width:74px;background:var(--mint);color:var(--teal);border-radius:22px;display:grid;place-items:center;font-size:27px;font-weight:800}
+.profile-head{display:flex;gap:18px;align-items:center}.profile-head h2{font-size:20px;margin-bottom:5px}
+.profile-head p{font-size:12px;color:var(--muted)}
+.term-result{border:1px solid var(--line);border-radius:12px;padding:17px;margin-top:12px}
+.term-result h3{font-size:17px;margin-bottom:6px}.term-result p{font-size:12px;line-height:1.8;color:#52656d;margin-top:8px}
+.term-result h4{font-size:11px;margin-top:16px;color:var(--teal);text-transform:uppercase;letter-spacing:.8px}
+.term-search{display:flex;gap:10px;margin-bottom:18px}.term-search input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:12px}
+.term-chip{padding:7px 11px;border:1px solid var(--line);border-radius:30px;background:white;color:#5c737b;font-size:10px}
+.term-chip:hover{border-color:var(--teal);color:var(--teal)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.modal-overlay{position:fixed;inset:0;background:#091d268c;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px)}
+.modal-overlay.show{display:flex}.modal{background:white;border-radius:17px;padding:25px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 70px #102a3540;animation:appear .2s ease}
+.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:22px}
+.modal-head h2{font-size:20px}.modal-close{border:0;background:#f0f4f5;border-radius:8px;width:32px;height:32px;font-size:19px;color:#52666d}
+.toast-wrap{position:fixed;top:90px;right:20px;z-index:100;display:flex;flex-direction:column;gap:9px;width:min(360px,calc(100vw - 32px))}
+.toast{background:white;border:1px solid var(--line);border-left:4px solid var(--teal);box-shadow:0 10px 30px #12334018;border-radius:10px;padding:13px 16px;font-size:12px;line-height:1.6;animation:appear .2s}
+.toast.error{border-left-color:#cf6464}.toast.warning{border-left-color:#dc9950}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.small-muted{font-size:11px;color:var(--muted);line-height:1.8}
+.two-col{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,1fr);gap:19px}
+.footer-note{font-size:10px;line-height:1.8;color:var(--muted);margin-top:17px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 0;border-bottom:1px solid var(--line)}
+.setting-row:last-child{border:0}.setting-row p{font-size:12px;font-weight:700;margin-bottom:5px}
+.setting-row small{font-size:10px;color:var(--muted);line-height:1.7}
+.switch{width:39px;height:22px;border-radius:20px;border:0;background:#cbd6d9;padding:3px;flex-shrink:0}
+.switch span{display:block;width:16px;height:16px;border-radius:50%;background:white;transition:.2s}
+.switch.on{background:var(--teal)}.switch.on span{transform:translateX(17px)}
+@media(max-width:1150px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:25px 23px}.topbar{padding:0 23px}.two-col{grid-template-columns:1fr}}
+@media(max-width:760px){
+.sidebar{transform:translateX(-100%);transition:.25s;width:270px}.sidebar.open{transform:translateX(0)}
+.mobile-overlay.show{display:block;position:fixed;inset:0;background:#0a202b70;z-index:19}
+.main{margin-left:0;width:100%}.topbar{height:65px;padding:0 16px}.mobile-toggle{display:block}
+.breadcrumb{display:none}.top-right{gap:10px}.content{padding:23px 15px 35px}
+h1{font-size:24px}.page-head{flex-direction:column;align-items:stretch}
+.grid-3,.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:17px}
+.metric{padding:15px}.metric-value{font-size:22px}.form-row{grid-template-columns:1fr;gap:0}
+.bar-row{grid-template-columns:85px 1fr 66px;gap:8px}
+.doc-item{align-items:flex-start;flex-wrap:wrap}.doc-actions{margin-left:55px}
+.banner{padding:23px}.banner h2{font-size:19px}.grid-4{gap:11px}
+}
+@media(max-width:460px){.grid-3,.grid-2{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-value{font-size:21px}.top-right .demo-pill{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><div class="brand-icon">✚</div><div><h2>CareSync AI</h2><small>PATIENT CARE INTELLIGENCE</small></div></div>
+ <div class="nav-label">WORKSPACE</div>
+ <button class="nav-btn active" data-page="overview"><span class="ico">◫</span>Overview</button>
+ <button class="nav-btn" data-page="vault"><span class="ico">▤</span>Medical Bill Vault</button>
+ <button class="nav-btn" data-page="expenses"><span class="ico">↗</span>Treatment Expense AI</button>
+ <button class="nav-btn" data-page="terms"><span class="ico">⌕</span>Medical Guide</button>
+ <div class="nav-label">CARE MANAGEMENT</div>
+ <button class="nav-btn" data-page="doctors"><span class="ico">♙</span>Find a Doctor</button>
+ <button class="nav-btn" data-page="appointments"><span class="ico">▦</span>Appointments</button>
+ <button class="nav-btn" data-page="profile"><span class="ico">◎</span>Patient Profile</button>
+ <div class="nav-label">PREFERENCES</div>
+ <button class="nav-btn" data-page="settings"><span class="ico">⚙</span>Settings</button>
+ <div class="demo-note"><strong>● DEMO ENVIRONMENT</strong><br>Sample patient data is stored in this browser. No real hospital connection is active.</div>
+</aside>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<main class="main">
+<header class="topbar">
+ <div style="display:flex;align-items:center;gap:14px"><button class="mobile-toggle" id="menuBtn" aria-label="Open navigation">☰</button><div class="breadcrumb">Care workspace &nbsp; / &nbsp; <strong id="breadcrumb">Overview</strong></div></div>
+ <div class="top-right"><span class="demo-pill">DEMO MODE</span><div class="avatar" id="topAvatar">PS</div></div>
+</header>
+<div class="content">
+
+<section class="page active" id="page-overview">
+ <div class="page-head"><div><div class="eyebrow">YOUR PERSONAL CARESPACE</div><h1 id="welcomeTitle">Good morning, Priya.</h1><p>Your health documents, treatment costs and appointments — together in one place.</p></div><button class="btn btn-primary" onclick="go('vault')">＋ Upload medical report</button></div>
+ <div class="banner"><div class="eyebrow" style="color:#9be5ca">ONE REPORT. A CLEARER PICTURE.</div><h2>Understand your medical bills.<br>Plan your care with clarity.</h2><p>Upload an existing medical report or bill to organize your records, explore extracted information where available, and review an illustrative treatment expense breakdown.</p><button class="btn" onclick="go('vault')">Open Medical Bill Vault &nbsp; →</button></div>
+ <div class="grid grid-4 section-gap">
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Recorded expenses</span><span class="metric-icon">₹</span></div><div class="metric-value" id="overviewSpend">₹0</div><div class="metric-foot">From your expense records</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Saved documents</span><span class="metric-icon">▤</span></div><div class="metric-value" id="overviewDocs">0</div><div class="metric-foot">Reports, bills and receipts</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Upcoming visits</span><span class="metric-icon">▦</span></div><div class="metric-value" id="overviewVisits">0</div><div class="metric-foot">Demo appointments</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Treatment records</span><span class="metric-icon">♡</span></div><div class="metric-value" id="overviewTreatments">0</div><div class="metric-foot">Saved treatment episodes</div></div>
+ </div>
+ <div class="grid grid-2 section-gap">
+  <div class="card"><div class="card-head"><div><h2>Recent medical documents</h2><p>Your uploaded reports and receipts</p></div><button class="btn btn-small" onclick="go('vault')">View all →</button></div><div id="overviewRecentDocs"></div></div>
+  <div class="card"><div class="card-head"><div><h2>Treatment expense snapshot</h2><p>Based on saved transactions</p></div><button class="btn btn-small" onclick="go('expenses')">Explore →</button></div><div id="overviewExpenseChart"></div></div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>Your care journey</h2><p>Quick access to the things that matter</p></div></div>
+  <div class="grid grid-3">
+   <button class="doctor-card" style="text-align:left" onclick="go('vault')"><div class="metric-icon">▤</div><h3 style="margin:13px 0 6px">01 · Save your report</h3><p class="small-muted">Keep medical reports and bills organized by treatment.</p></button>
+   <button class="doctor-card" style="text-align:left" onclick="go('expenses')"><div class="metric-icon">₹</div><h3 style="margin:13px 0 6px">02 · Understand costs</h3><p class="small-muted">Review recorded spending and illustrative cost categories.</p></button>
+   <button class="doctor-card" style="text-align:left" onclick="go('terms')"><div class="metric-icon">Aa</div><h3 style="margin:13px 0 6px">03 · Learn the terms</h3><p class="small-muted">Read plain-English and Tamil medical explanations.</p></button>
+  </div>
+ </div>
+ <p class="footer-note">CareSync AI is a demonstration frontend. It does not diagnose diseases, read medical report contents automatically, recommend a treatment, or provide verified hospital prices.</p>
+</section>
+
+<section class="page" id="page-vault">
+ <div class="page-head"><div><div class="eyebrow">YOUR DIGITAL HEALTH RECORD</div><h1>Medical Bill Vault</h1><p>Store, organize and retrieve your medical documents in one place.</p></div><button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">↑ Upload document</button></div>
+ <div class="notice info-notice" style="margin-bottom:20px">Demo storage notice: document metadata is saved in this browser. File data may use temporary browser memory and can disappear after a refresh. This is not secure medical cloud storage. Do not upload real patient records to this demo.</div>
+ <div class="grid grid-3" style="margin-bottom:20px">
+  <div class="card metric"><div class="metric-label">TOTAL DOCUMENTS</div><div class="metric-value" id="vaultCount">0</div><div class="metric-foot">Saved in this browser</div></div>
+  <div class="card metric"><div class="metric-label">REPORTS & RECORDS</div><div class="metric-value" id="vaultReports">0</div><div class="metric-foot">Diagnostic and treatment documents</div></div>
+  <div class="card metric"><div class="metric-label">BILLS & RECEIPTS</div><div class="metric-value" id="vaultBills">0</div><div class="metric-foot">Financial documents</div></div>
+ </div>
+ <div class="card"><div class="card-head"><div><h2>Document library</h2><p>Search, preview, download or update your files</p></div></div>
+  <div class="toolbar"><div class="searchbox" style="flex:1"><span>⌕</span><input id="docSearch" placeholder="Search file, treatment or category..." oninput="renderVault()"></div><select id="docFilter"><option value="">All document types</option><option>Medical Report</option><option>Medical Bill</option><option>Prescription</option><option>Lab Report</option><option>Scan Report</option><option>Other</option></select></div>
+  <div id="vaultList" class="doc-list"></div>
+ </div>
+ <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" multiple hidden>
+ <div class="card section-gap"><div class="card-head"><div><h2>Upload a new document</h2><p>Supported formats: PDF, JPG and PNG · Maximum 5 MB per file</p></div></div>
+  <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Choose files to upload"><div class="upload-symbol">↑</div><h3>Drop your medical documents here</h3><p>or click to browse from your device<br>PDF documents and scanned image files are supported</p><button class="btn btn-primary" style="margin-top:17px" onclick="document.getElementById('fileInput').click()">Choose files</button></div>
+  <div id="uploadStatus" class="small-muted" style="margin-top:12px"></div>
+ </div>
+</section>
+
+<section class="page" id="page-expenses">
+ <div class="page-head"><div><div class="eyebrow">TREATMENT EXPENSE INTELLIGENCE</div><h1>Know where your money goes.</h1><p>Explore recorded treatment costs and clearly labelled illustrative estimates.</p></div><button class="btn btn-primary" onclick="openExpenseModal()">＋ Add expense</button></div>
+ <div class="notice" style="margin-bottom:19px"><strong>Important:</strong> A report filename or disease keyword cannot establish a diagnosis or determine which medicines, scans or tests you need. This frontend does not automatically read medical reports. Illustrative treatment categories are not medical recommendations or verified prices. Only record actual bills as actual expenses.</div>
+ <div class="grid grid-4">
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Total recorded</span><span class="metric-icon">₹</span></div><div class="metric-value" id="totalSpend">₹0</div><div class="metric-foot">Filtered transaction total</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Transactions</span><span class="metric-icon">≡</span></div><div class="metric-value" id="totalTransactions">0</div><div class="metric-foot">Recorded expenses</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Highest category</span><span class="metric-icon">↗</span></div><div class="metric-value" id="highestCategory" style="font-size:17px">—</div><div class="metric-foot">By recorded amount</div></div>
+  <div class="card metric"><div class="metric-top"><span class="metric-label">Average expense</span><span class="metric-icon">∑</span></div><div class="metric-value" id="averageSpend">₹0</div><div class="metric-foot">Per transaction</div></div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>Report-to-cost workspace</h2><p>Choose a saved report to view its linked records and an optional educational example.</p></div></div>
+  <div class="form-row"><div class="field"><label for="linkedReport">Saved medical document</label><select id="linkedReport"><option value="">Select a report</option></select></div><div class="field"><label for="insightMode">View</label><select id="insightMode"><option value="recorded">Recorded expenses only</option><option value="illustrative">Show illustrative categories</option></select></div></div>
+  <div id="reportInsights"><div class="empty">Select a saved document to explore associated expense records.</div></div>
+ </div>
+ <div class="grid grid-2 section-gap">
+  <div class="card"><div class="card-head"><div><h2>Spending by category</h2><p>Actual saved transactions in the selected filters</p></div></div><div id="categoryChart"></div></div>
+  <div class="card"><div class="card-head"><div><h2>Monthly spending</h2><p>Recorded expenses over the past six months</p></div></div><div id="monthlyChart"></div></div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>Expense transactions</h2><p>All actual records matching your filters</p></div><button class="btn btn-small" onclick="exportCSV()">↓ Export CSV</button></div>
+  <div class="toolbar"><div class="searchbox" style="flex:1"><span>⌕</span><input id="expenseSearch" placeholder="Search treatment, description..." ></div>
+   <select id="expenseCategory"><option value="">All categories</option><option>Consultation</option><option>Medicines</option><option>Laboratory Tests</option><option>Scans</option><option>Procedures</option><option>Follow-ups</option><option>Other</option></select>
+   <input type="date" id="expenseFrom" aria-label="Start date"><input type="date" id="expenseTo" aria-label="End date">
+  </div><div class="table-wrap" id="expenseTable"></div>
+ </div>
+ <p class="footer-note">No treatment plan or future medical bill can be predicted reliably from a disease label alone. Ask your clinician which tests or treatment are indicated, and request current prices from the provider.</p>
+</section>
+
+<section class="page" id="page-terms">
+ <div class="page-head"><div><div class="eyebrow">PATIENT EDUCATION</div><h1>Medical terms, made clearer.</h1><p>Explore plain-language definitions in English and Tamil.</p></div></div>
+ <div class="grid grid-2">
+  <div class="card"><div class="card-head"><div><h2>Medical term explorer</h2><p>Search for a term in a report or prescription.</p></div></div>
+   <form id="termForm"><div class="term-search"><input id="termInput" placeholder="e.g. hypertension, anemia..." required><button class="btn btn-primary">Explain</button></div></form>
+   <p class="small-muted">Popular terms</p><div class="chips" id="termChips"></div>
+   <div id="termResult"><div class="empty"><div class="empty-icon">Aa</div>Choose a medical term to read its meaning.</div></div>
+  </div>
+  <div class="card"><div class="card-head"><div><h2>Medicine information guide</h2><p>Understand labels and ask better questions.</p></div></div>
+   <div class="field"><label for="medicineInput">Generic medicine name</label><input id="medicineInput" placeholder="e.g. paracetamol"></div>
+   <button class="btn btn-primary" style="width:100%" onclick="searchMedicine()">Look up medicine information →</button>
+   <div id="medicineResult" style="margin-top:17px"><div class="empty"><div class="empty-icon">℞</div>Enter an exact medicine name to explore the locally available guide.</div></div>
+   <hr><div class="notice info-notice">No live medicine database is connected in this demo. This tool will not invent official labels, personalized doses or medicine substitutions. Verify medication information with a qualified pharmacist or doctor.</div>
+  </div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>Understand your report</h2><p>Common sections you may see in a medical document</p></div></div>
+  <div class="grid grid-3">
+   <div style="padding:12px 0"><span class="badge badge-blue">01 · FINDINGS</span><h3 style="margin:12px 0 7px">What the report describes</h3><p class="small-muted">Observations, measurements or test results written by the reporting professional.</p></div>
+   <div style="padding:12px 0"><span class="badge badge-green">02 · IMPRESSION</span><h3 style="margin:12px 0 7px">What the findings may mean</h3><p class="small-muted">A professional summary of the findings. It should be interpreted in clinical context.</p></div>
+   <div style="padding:12px 0"><span class="badge badge-orange">03 · NEXT STEPS</span><h3 style="margin:12px 0 7px">Questions for your clinician</h3><p class="small-muted">Ask what follow-up is needed, how urgent it is, and which costs should be confirmed.</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="page" id="page-doctors">
+ <div class="page-head"><div><div class="eyebrow">CARE, ON YOUR TERMS</div><h1>Find the right doctor.</h1><p>Explore sample doctor profiles and simulated appointment availability.</p></div></div>
+ <div class="notice info-notice" style="margin-bottom:20px">All doctors, fees, locations and availability on this page are synthetic demo data. This website does not contact clinics or book real appointments.</div>
+ <div class="card" style="margin-bottom:19px"><div class="toolbar" style="margin:0">
+  <div class="searchbox" style="flex:2"><span>⌕</span><input id="doctorSearch" placeholder="Doctor name or location..."></div>
+  <select id="doctorSpecialty"><option value="">All specialties</option><option>Cardiology</option><option>General Medicine</option><option>Endocrinology</option><option>Oncology</option><option>Dermatology</option><option>Neurology</option><option>Orthopedics</option></select>
+  <select id="doctorSort"><option value="recommended">Recommended</option><option value="fee">Lowest fee</option><option value="experience">Most experience</option></select>
+ </div></div><div id="doctorList" class="grid grid-3"></div>
+</section>
+
+<section class="page" id="page-appointments">
+ <div class="page-head"><div><div class="eyebrow">YOUR VISIT SCHEDULE</div><h1>Appointments.</h1><p>Manage demo bookings, reschedule visits and review your history.</p></div><button class="btn btn-primary" onclick="go('doctors')">＋ Find a doctor</button></div>
+ <div class="notice info-notice" style="margin-bottom:19px">Bookings here are stored locally as demo records. They are not confirmed with a healthcare provider.</div>
+ <div class="grid grid-3" style="margin-bottom:20px">
+  <div class="card metric"><div class="metric-label">UPCOMING</div><div class="metric-value" id="apptUpcoming">0</div><div class="metric-foot">Scheduled demo visits</div></div>
+  <div class="card metric"><div class="metric-label">COMPLETED</div><div class="metric-value" id="apptCompleted">0</div><div class="metric-foot">Demo history</div></div>
+  <div class="card metric"><div class="metric-label">CANCELLED</div><div class="metric-value" id="apptCancelled">0</div><div class="metric-foot">Cancelled demo visits</div></div>
+ </div>
+ <div class="card"><div class="card-head"><div><h2>Appointment history</h2><p>View and manage all your appointments</p></div><select id="apptFilter" style="border:1px solid var(--line);padding:9px;border-radius:8px"><option value="">All statuses</option><option>Upcoming</option><option>Completed</option><option>Cancelled</option></select></div><div id="appointmentList"></div></div>
+</section>
+
+<section class="page" id="page-profile">
+ <div class="page-head"><div><div class="eyebrow">YOUR PERSONAL INFORMATION</div><h1>Patient profile.</h1><p>Manage your preferences and see your personal care activity.</p></div></div>
+ <div class="grid grid-2">
+  <div class="card"><div class="profile-head"><div class="profile-avatar" id="profileAvatar">PS</div><div><h2 id="profileDisplayName">Priya Sharma</h2><p>Demo patient account</p><span class="badge badge-green" style="margin-top:9px">Local demo profile</span></div></div><hr>
+   <form id="profileForm"><div class="field"><label for="profileName">Full name</label><input id="profileName" required maxlength="70"></div><div class="form-row"><div class="field"><label for="profileEmail">Email address</label><input id="profileEmail" type="email" maxlength="100"></div><div class="field"><label for="profilePhone">Phone number (optional)</label><input id="profilePhone" maxlength="20"></div></div><div class="form-row"><div class="field"><label for="profileCity">City</label><input id="profileCity" maxlength="70"></div><div class="field"><label for="profileLanguage">Preferred language</label><select id="profileLanguage"><option>English</option><option>Tamil</option><option>Hindi</option></select></div></div><button class="btn btn-primary">Save profile</button></form>
+  </div>
+  <div class="card"><div class="card-head"><div><h2>Care activity</h2><p>Your current saved records</p></div></div><div class="setting-row"><div><p>Medical documents</p><small>Reports and receipts in your vault</small></div><strong id="profileDocs">0</strong></div><div class="setting-row"><div><p>Recorded expenses</p><small>Total saved transactions</small></div><strong id="profileExpenses">₹0</strong></div><div class="setting-row"><div><p>Appointments</p><small>All demo appointment records</small></div><strong id="profileAppts">0</strong></div><div class="setting-row"><div><p>Treatment episodes</p><small>Distinct saved treatment names</small></div><strong id="profileTreatments">0</strong></div><hr><button class="btn" style="width:100%" onclick="go('vault')">Open document vault →</button></div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>Recent activity</h2><p>Latest changes made in this browser</p></div></div><div id="activityList"></div></div>
+</section>
+
+<section class="page" id="page-settings">
+ <div class="page-head"><div><div class="eyebrow">YOUR PREFERENCES</div><h1>Settings.</h1><p>Control your demo experience and local data.</p></div></div>
+ <div class="grid grid-2">
+  <div class="card"><div class="card-head"><div><h2>Application preferences</h2><p>Customize your CareSync workspace</p></div></div>
+   <div class="setting-row"><div><p>Appointment reminders</p><small>Show local demo reminder notifications</small></div><button class="switch on" id="reminderSwitch" aria-label="Toggle appointment reminders"><span></span></button></div>
+   <div class="setting-row"><div><p>Expense notifications</p><small>Show a notice when an expense is saved</small></div><button class="switch on" id="expenseSwitch" aria-label="Toggle expense notifications"><span></span></button></div>
+   <div class="setting-row"><div><p>Language</p><small>Choose your preferred interface language</small></div><select id="settingsLanguage" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option>English</option><option>Tamil</option><option>Hindi</option></select></div>
+  </div>
+  <div class="card"><div class="card-head"><div><h2>Data management</h2><p>Understand and manage browser storage</p></div></div>
+   <div class="notice info-notice">This is a frontend-only demo. Data is not encrypted medical cloud storage and is not synced across devices. Do not use this version for real patient information.</div>
+   <div class="setting-row"><div><p>Export your records</p><small>Download expenses, documents and appointments as JSON. Uploaded file bytes are not included.</small></div><button class="btn btn-small" onclick="exportData()">Export</button></div>
+   <div class="setting-row"><div><p>Restore sample data</p><small>Replace the current demo records with the original sample dataset.</small></div><button class="btn btn-small" onclick="resetDemo()">Restore</button></div>
+   <div class="setting-row"><div><p>Clear local records</p><small>Delete saved demo expenses, documents and appointments.</small></div><button class="btn btn-small btn-danger" onclick="clearData()">Clear data</button></div>
+  </div>
+ </div>
+ <div class="card section-gap"><div class="card-head"><div><h2>About CareSync AI</h2><p>A patient-centered medical record and expense management prototype</p></div></div><p class="small-muted">CareSync AI helps organize existing documents, record expenses, explore general medical terminology and manage simulated appointments. It does not provide diagnoses, prescribe medicines, guarantee treatment costs or contact actual doctors.</p></div>
+</section>
+</div>
+</main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Details</h2><button class="modal-close" onclick="closeModal()" aria-label="Close dialog">×</button></div><div id="modalBody"></div></div></div>
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(Number(n)||0);
+const today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const categories=["Consultation","Medicines","Laboratory Tests","Scans","Procedures","Follow-ups","Other"];
+const terms={
+ hypertension:{title:"Hypertension",pron:"hy-per-TEN-shun",en:"Hypertension means blood pressure that stays higher than the recommended range. Blood pressure is the force of blood against artery walls.",ta:"உயர் இரத்த அழுத்தம் என்பது இரத்த நாளங்களின் சுவர்களில் இரத்தம் செலுத்தும் அழுத்தம் தொடர்ந்து அதிகமாக இருப்பதைக் குறிக்கும்.",why:"A clinician may check blood pressure repeatedly and assess other health factors. Treatment depends on the person's circumstances.",example:"Your report may mention a blood pressure reading such as systolic/diastolic values.",ask:"What do my readings mean, and how often should I check them?"},
+ hypothyroidism:{title:"Hypothyroidism",pron:"hy-po-THY-roid-iz-um",en:"A condition in which the thyroid gland does not produce enough thyroid hormones for the body's needs.",ta:"தைராய்டு சுரப்பி உடலுக்குத் தேவையான அளவு ஹார்மோன்களை உற்பத்தி செய்யாத நிலை.",why:"A clinician may review symptoms and thyroid blood tests. Treatment and monitoring are individualized.",example:"A report may mention TSH or thyroid hormone test results.",ask:"What do my thyroid results mean, and when should they be reviewed?"},
+ hyperlipidemia:{title:"Hyperlipidemia",pron:"hy-per-lip-ih-DEE-mee-uh",en:"Higher-than-recommended levels of certain fats, such as cholesterol or triglycerides, in the blood.",ta:"இரத்தத்தில் கொலஸ்ட்ரால் அல்லது டிரைகிளிசரைடு போன்ற கொழுப்புகளின் அளவு அதிகமாக இருப்பது.",why:"A clinician considers the lipid profile and overall cardiovascular risk before deciding what care is appropriate.",example:"Your report may include LDL, HDL, total cholesterol or triglycerides.",ask:"Which lipid values are outside the recommended range for me?"},
+ anemia:{title:"Anemia",pron:"uh-NEE-mee-uh",en:"A condition in which the blood has too little hemoglobin or too few healthy red blood cells to carry oxygen effectively.",ta:"உடலில் ஆக்சிஜனை எடுத்துச் செல்லும் ஹீமோகுளோபின் அல்லது சிவப்பு இரத்த அணுக்கள் போதுமான அளவில் இல்லாத நிலை.",why:"Possible causes vary. A clinician may consider a blood count and other tests based on the situation.",example:"A complete blood count may include hemoglobin (Hb).",ask:"What could be causing the result, and what follow-up is appropriate?"},
+ diabetes:{title:"Diabetes",pron:"dy-uh-BEE-teez",en:"A group of conditions that affect how the body regulates blood glucose (blood sugar).",ta:"உடல் இரத்தச் சர்க்கரையை எவ்வாறு கட்டுப்படுத்துகிறது என்பதைப் பாதிக்கும் ஒரு நிலை.",why:"Assessment may include blood glucose or HbA1c testing. Care depends on the type and individual clinical needs.",example:"A report may contain fasting glucose or HbA1c.",ask:"What do my glucose results mean and what follow-up do I need?"},
+ cancer:{title:"Cancer",pron:"KAN-ser",en:"A group of diseases in which abnormal cells grow uncontrollably. Different cancers behave differently and need different assessments.",ta:"சில உடல் செல்கள் கட்டுப்பாடின்றி வளர்வதால் ஏற்படும் பல்வேறு நோய்களின் பொதுப்பெயர் புற்றுநோய்.",why:"The exact type, location, stage and clinical findings matter. A single word or filename cannot establish an individual's diagnosis or treatment plan.",example:"A report may mention pathology, biopsy or imaging findings.",ask:"What exactly does the report establish, and what does it not establish?"},
+ biopsy:{title:"Biopsy",pron:"BY-op-see",en:"A procedure in which a small sample of tissue or cells is collected for examination.",ta:"ஆய்வுக்காக உடலிலிருந்து சிறிய திசு அல்லது செல்களின் மாதிரி எடுக்கப்படும் செயல்முறை.",why:"The reason for a biopsy and the interpretation of its result depend on the clinical context.",example:"A pathology report may describe tissue examined under a microscope.",ask:"Why was this sample taken, and when will the result be explained?"},
+ mri:{title:"MRI",pron:"em-ar-eye",en:"Magnetic resonance imaging uses magnetic fields and radio waves to create detailed pictures inside the body.",ta:"காந்தப்புலம் மற்றும் வானொலி அலைகளைப் பயன்படுத்தி உடலின் உள்ளகப் படங்களை உருவாக்கும் ஸ்கேன் முறை.",why:"A clinician chooses imaging based on the question being investigated.",example:"A report may describe findings in a particular body region.",ask:"What did the imaging find, and what follow-up is needed?"},
+ cbc:{title:"CBC",pron:"see-bee-see",en:"Complete blood count. A blood test that measures several blood-cell components, including red cells, white cells and platelets.",ta:"முழுமையான இரத்த அணுப் பரிசோதனை. சிவப்பு அணுக்கள், வெள்ளை அணுக்கள் மற்றும் தகட்டணுக்கள் போன்றவற்றை அளவிடுகிறது.",why:"Results are interpreted together with symptoms, medical history and other findings.",example:"The report may include hemoglobin, WBC, RBC and platelet counts.",ask:"Which values matter most in my results?"},
+ cholesterol:{title:"Cholesterol",pron:"kuh-LES-tuh-rawl",en:"A waxy substance in the blood that the body needs, but abnormal levels can contribute to cardiovascular risk.",ta:"உடலுக்குத் தேவையான ஒரு கொழுப்புப் பொருள். சில அளவுகள் அதிகமாக இருப்பது இதய மற்றும் இரத்த நாள அபாயத்துடன் தொடர்புடையதாக இருக்கலாம்.",why:"A lipid profile and overall health context help clinicians interpret cholesterol results.",example:"LDL and HDL are commonly reported cholesterol-related measures.",ask:"How should my lipid profile be interpreted?"},
+ glucose:{title:"Glucose",pron:"GLOO-kohs",en:"A type of sugar in the blood that the body uses for energy.",ta:"உடலுக்கு ஆற்றல் தரும் சர்க்கரையின் ஒரு வகை. இரத்தத்தில் உள்ள அளவைப் பரிசோதிக்கலாம்.",why:"The meaning of a glucose result depends on the test type, timing and clinical context.",example:"Reports may mention fasting blood glucose or HbA1c.",ask:"Was this test fasting, and how should the result be understood?"},
+ ecg:{title:"ECG / EKG",pron:"ee-see-jee",en:"An electrocardiogram records the electrical activity of the heart.",ta:"இதயத்தின் மின்சாரச் செயல்பாட்டைப் பதிவு செய்யும் பரிசோதனை.",why:"A qualified clinician interprets the tracing with symptoms and other findings.",example:"An ECG report may describe rhythm and electrical patterns.",ask:"What does this result mean alongside my symptoms?"}
+};
+const medicines={
+ paracetamol:{name:"Paracetamol (acetaminophen)",info:"A pain-relieving and fever-reducing medicine. It is included in many single-ingredient and combination products.",warning:"Taking too much can cause serious liver injury. Check all product labels to avoid accidentally taking multiple products containing paracetamol.",ask:"Confirm the exact product, formulation, directions and whether it is suitable for you with a pharmacist."},
+ ibuprofen:{name:"Ibuprofen",info:"A non-steroidal anti-inflammatory medicine used for pain, fever and inflammation in some circumstances.",warning:"It may be unsuitable for some people, including those with certain stomach ulcers, kidney problems, cardiovascular conditions or pregnancy-related restrictions. Interactions are possible.",ask:"Ask a pharmacist whether it is suitable given your conditions and other medicines."},
+ amoxicillin:{name:"Amoxicillin",info:"A penicillin-class antibiotic used for certain bacterial infections when prescribed.",warning:"It is not effective against viral infections. Allergies and other contraindications must be considered. Unnecessary use contributes to antibiotic resistance.",ask:"Use only as prescribed and confirm any penicillin allergy with your clinician."},
+ metformin:{name:"Metformin",info:"A medicine commonly used to help manage blood glucose in type 2 diabetes when clinically appropriate.",warning:"Kidney function, other illnesses and some imaging procedures may affect whether or how it is used. Rare serious adverse effects can occur.",ask:"Ask your prescriber how your kidney function and other medicines affect your treatment."},
+ cetirizine:{name:"Cetirizine",info:"An antihistamine used to relieve certain allergy symptoms.",warning:"It can cause drowsiness in some people. Kidney function, age and other medicines may affect suitability.",ask:"Check the correct formulation and directions with a pharmacist."},
+ omeprazole:{name:"Omeprazole",info:"A proton pump inhibitor that reduces stomach acid and is used for certain acid-related conditions.",warning:"Long-term use and potential interactions should be reviewed by a clinician. The right duration depends on the reason it was prescribed.",ask:"Ask how long the medicine is intended to be used and when it should be reviewed."}
+};
+const seedExpenses=[
+{id:"e1",date:"2026-09-16",category:"Consultation",description:"Specialist consultation",treatment:"General health review",amount:800,documentId:""},
+{id:"e2",date:"2026-09-17",category:"Laboratory Tests",description:"Blood panel receipt",treatment:"General health review",amount:1250,documentId:""},
+{id:"e3",date:"2026-09-21",category:"Medicines",description:"Pharmacy receipt",treatment:"General health review",amount:640,documentId:""},
+{id:"e4",date:"2026-10-02",category:"Scans",description:"Imaging receipt",treatment:"Diagnostic evaluation",amount:2800,documentId:""},
+{id:"e5",date:"2026-10-03",category:"Follow-ups",description:"Follow-up visit",treatment:"Diagnostic evaluation",amount:500,documentId:""}
+];
+const seedDocs=[
+{id:"d1",name:"General_Checkup_Report.pdf",date:"2026-09-16",category:"Medical Report",treatment:"General health review",size:245760,type:"application/pdf",data:null,demo:true},
+{id:"d2",name:"Lab_Test_Receipt.pdf",date:"2026-09-17",category:"Medical Bill",treatment:"General health review",size:153600,type:"application/pdf",data:null,demo:true},
+{id:"d3",name:"Diagnostic_Imaging_Report.pdf",date:"2026-10-02",category:"Scan Report",treatment:"Diagnostic evaluation",size:318000,type:"application/pdf",data:null,demo:true}
+];
+const seedDoctors=[
+{id:"dr1",name:"Dr. Ananya Raman",specialty:"Cardiology",experience:12,fee:800,location:"Chennai",availability:["10:00 AM","11:30 AM","03:00 PM"],initials:"AR"},
+{id:"dr2",name:"Dr. Karthik Iyer",specialty:"General Medicine",experience:9,fee:500,location:"Chennai",availability:["09:30 AM","12:00 PM","04:30 PM"],initials:"KI"},
+{id:"dr3",name:"Dr. Meera Krishnan",specialty:"Endocrinology",experience:14,fee:1000,location:"Coimbatore",availability:["10:30 AM","01:00 PM","03:30 PM"],initials:"MK"},
+{id:"dr4",name:"Dr. Rahul Menon",specialty:"Oncology",experience:16,fee:1200,location:"Chennai",availability:["09:00 AM","11:00 AM","02:30 PM"],initials:"RM"},
+{id:"dr5",name:"Dr. Divya Nair",specialty:"Dermatology",experience:8,fee:600,location:"Madurai",availability:["10:00 AM","12:30 PM","04:00 PM"],initials:"DN"},
+{id:"dr6",name:"Dr. Arjun Kumar",specialty:"Neurology",experience:11,fee:900,location:"Chennai",availability:["09:30 AM","01:30 PM","04:00 PM"],initials:"AK"},
+{id:"dr7",name:"Dr. Lakshmi Devi",specialty:"Orthopedics",experience:10,fee:700,location:"Trichy",availability:["10:00 AM","12:00 PM","03:30 PM"],initials:"LD"}
+];
+function load(key,fallback){try{const s=localStorage.getItem("caresync_"+key);return s?JSON.parse(s):structuredClone(fallback)}catch{return structuredClone(fallback)}}
+let expenses=load("expenses",seedExpenses),docs=load("docs",seedDocs),appointments=load("appointments",[]);
+let profile=load("profile",{name:"Priya Sharma",email:"",phone:"",city:"Chennai",language:"English"});
+let activities=load("activities",[{id:uid(),text:"CareSync AI demo workspace opened",date:new Date().toISOString()}]);
+let preferences=load("preferences",{reminders:true,expenseNotifications:true,language:"English"});
+function save(key,value){try{localStorage.setItem("caresync_"+key,JSON.stringify(value));return true}catch{toast("Browser storage is full. Remove large files or clear some records.","error");return false}}
+function logActivity(text){activities.unshift({id:uid(),text,date:new Date().toISOString()});activities=activities.slice(0,30);save("activities",activities)}
+function toast(message,type="success"){const el=document.createElement("div");el.className="toast "+(type==="error"?"error":type==="warning"?"warning":"");el.textContent=message;$("toastWrap").appendChild(el);setTimeout(()=>el.remove(),4200)}
+function go(page){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));
+ document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ const b=document.querySelector('[data-page="'+page+'"]');$("breadcrumb").textContent=b?b.textContent.trim():page;
+ $("sidebar").classList.remove("open");$("mobileOverlay").classList.remove("show");
+ if(page==="overview")renderOverview();if(page==="vault")renderVault();if(page==="expenses"){refreshReportSelect();renderExpenses();renderReportInsights()}
+ if(page==="doctors")renderDoctors();if(page==="appointments")renderAppointments();if(page==="profile")renderProfile();if(page==="settings")renderSettings();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+$("menuBtn").addEventListener("click",()=>{$("sidebar").classList.toggle("open");$("mobileOverlay").classList.toggle("show")});
+$("mobileOverlay").addEventListener("click",()=>{$("sidebar").classList.remove("open");$("mobileOverlay").classList.remove("show")});
+function openModal(title,html){$("modalTitle").textContent=title;$("modalBody").innerHTML=html;$("modalOverlay").classList.add("show");$("modalOverlay").querySelector(".modal-close").focus()}
+function closeModal(){$("modalOverlay").classList.remove("show")}
+$("modalOverlay").addEventListener("click",e=>{if(e.target===$("modalOverlay"))closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+function fmtDate(s){if(!s)return"—";const d=new Date(s+"T12:00:00");return Number.isNaN(d.getTime())?s:d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}
+function bytes(n){return n<1024? n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1)+" MB"}
+function uniqueTreatments(){return new Set(expenses.map(e=>e.treatment).filter(Boolean).concat(docs.map(d=>d.treatment).filter(Boolean))).size}
+function renderOverview(){
+ $("overviewSpend").textContent=money(expenses.reduce((a,e)=>a+e.amount,0));$("overviewDocs").textContent=docs.length;
+ $("overviewVisits").textContent=appointments.filter(a=>a.status==="Upcoming"&&a.date>=today()).length;$("overviewTreatments").textContent=uniqueTreatments();
+ $("welcomeTitle").textContent="Welcome, "+(profile.name.trim().split(/\s+/)[0]||"Patient")+".";
+ $("topAvatar").textContent=(profile.name.trim().split(/\s+/).map(x=>x[0]).join("").slice(0,2)||"PS").toUpperCase();
+ const recent=docs.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+ $("overviewRecentDocs").innerHTML=recent.length?'<div class="doc-list">'+recent.map(d=>`<div class="doc-item"><div class="file-icon">${fileExt(d.name)}</div><div class="doc-info"><strong>${esc(d.name)}</strong><small>${esc(d.category)} · ${fmtDate(d.date)}</small></div><button class="icon-btn" onclick="previewDoc('${d.id}')" aria-label="Preview ${esc(d.name)}">↗</button></div>`).join("")+'</div>':'<div class="empty">No documents saved yet.<br><button class="btn btn-small" onclick="go(\'vault\')">Upload a document</button></div>';
+ const sums={};expenses.forEach(e=>sums[e.category]=(sums[e.category]||0)+e.amount);
+ const entries=Object.entries(sums).sort((a,b)=>b[1]-a[1]).slice(0,5),max=Math.max(...entries.map(x=>x[1]),1);
+ $("overviewExpenseChart").innerHTML=entries.length?entries.map(([k,v])=>`<div class="bar-row"><span class="bar-label">${esc(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><span class="bar-value">${money(v)}</span></div>`).join(""):'<div class="empty">Add an expense to see your spending.</div>';
+}
+function fileExt(name){const e=(name.split(".").pop()||"FILE").toUpperCase();return e==="JPEG"?"JPG":e}
+function renderVault(){
+ const search=$("docSearch").value.toLowerCase(),filter=$("docFilter").value;
+ const list=docs.filter(d=>(!filter||d.category===filter)&&[d.name,d.category,d.treatment].join(" ").toLowerCase().includes(search));
+ $("vaultCount").textContent=docs.length;$("vaultReports").textContent=docs.filter(d=>!["Medical Bill"].includes(d.category)).length;$("vaultBills").textContent=docs.filter(d=>d.category==="Medical Bill").length;
+ $("vaultList").innerHTML=list.length?list.map(d=>`<div class="doc-item"><div class="file-icon">${fileExt(d.name)}</div><div class="doc-info"><strong>${esc(d.name)}</strong><small>${esc(d.category)} · ${fmtDate(d.date)} · ${bytes(d.size)}<br>Treatment: ${esc(d.treatment||"Not linked")}${d.demo?" · Sample record":""}</small></div><div class="doc-actions"><button class="icon-btn" onclick="previewDoc('${d.id}')">Preview</button><button class="icon-btn" onclick="editDoc('${d.id}')">Edit</button><button class="icon-btn" onclick="downloadDoc('${d.id}')">↓</button><button class="icon-btn" onclick="deleteDoc('${d.id}')">×</button></div></div>`).join(""):'<div class="empty"><div class="empty-icon">▤</div>No matching documents found.<br>Upload a medical bill or report to start your vault.</div>';
+ refreshReportSelect();
+}
+$("docFilter").addEventListener("change",renderVault);
+function refreshReportSelect(){
+ const s=$("linkedReport");if(!s)return;const old=s.value;
+ s.innerHTML='<option value="">Select a report</option>'+docs.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join("");
+ if(docs.some(d=>d.id===old))s.value=old;
+}
+function fileToDataURL(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error("Could not read this file."));r.readAsDataURL(file)})}
+async function handleFiles(files){
+ if(!files.length)return;let added=0;
+ for(const f of Array.from(files)){
+  if(!/\.(pdf|jpg|jpeg|png)$/i.test(f.name)){toast(f.name+": only PDF, JPG and PNG are supported.","error");continue}
+  if(f.size>5*1024*1024){toast(f.name+": exceeds the 5 MB file limit.","error");continue}
+  if(f.size===0){toast(f.name+": file is empty.","error");continue}
+  const type=f.type||(/\.pdf$/i.test(f.name)?"application/pdf":/\.png$/i.test(f.name)?"image/png":"image/jpeg");
+  if(!["application/pdf","image/jpeg","image/png"].includes(type)){toast(f.name+": unsupported file type.","error");continue}
+  try{
+   $("uploadStatus").textContent="Reading "+f.name+"…";
+   const data=await fileToDataURL(f);
+   const id=uid();const category=/bill|receipt|invoice|payment/i.test(f.name)?"Medical Bill":/prescription/i.test(f.name)?"Prescription":/scan|mri|xray|ct-/i.test(f.name)?"Scan Report":/lab|blood|test/i.test(f.name)?"Lab Report":"Medical Report";
+   const d={id,name:f.name,date:today(),category,treatment:"",size:f.size,type,data,demo:false};
+   docs.unshift(d);
+   if(!save("docs",docs)){docs.shift();continue}
+   added++;logActivity("Uploaded document: "+f.name);
+  }catch(e){toast(f.name+": "+e.message,"error")}
+ }
+ $("uploadStatus").textContent=added?added+" document(s) added to this browser.":"No new documents were added.";
+ $("fileInput").value="";renderVault();renderOverview();renderProfile();
+ if(added)toast(added+" document(s) saved in this browser.");
+}
+$("fileInput").addEventListener("change",e=>handleFiles(e.target.files));
+$("uploadZone").addEventListener("click",e=>{if(!e.target.closest("button"))$("fileInput").click()});
+$("uploadZone").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ") {e.preventDefault();$("fileInput").click()}});
+$("uploadZone").addEventListener("dragover",e=>{e.preventDefault();$("uploadZone").classList.add("drag")});
+$("uploadZone").addEventListener("dragleave",()=>$("uploadZone").classList.remove("drag"));
+$("uploadZone").addEventListener("drop",e=>{e.preventDefault();$("uploadZone").classList.remove("drag");handleFiles(e.dataTransfer.files)});
+function previewDoc(id){
+ const d=docs.find(x=>x.id===id);if(!d)return;
+ let body="";
+ if(d.data&&d.type==="application/pdf")body=`<iframe title="PDF preview" src="${d.data}" style="width:100%;height:55vh;border:1px solid var(--line);border-radius:8px"></iframe>`;
+ else if(d.data&&d.type.startsWith("image/"))body=`<img src="${d.data}" alt="${esc(d.name)}" style="max-width:100%;max-height:55vh;display:block;margin:auto;border-radius:8px">`;
+ else body=`<div class="empty"><div class="empty-icon">▤</div><h3>${esc(d.name)}</h3><p>This is a sample document record without an actual file attached. Upload a real file to preview it.</p></div>`;
+ openModal("Document preview",body+`<p class="small-muted" style="margin-top:13px">${esc(d.category)} · ${fmtDate(d.date)} · ${bytes(d.size)}</p>`);
+}
+function downloadDoc(id){
+ const d=docs.find(x=>x.id===id);if(!d)return;
+ if(!d.data){toast("This sample record has no original file to download.","warning");return}
+ const a=document.createElement("a");a.href=d.data;a.download=d.name;document.body.appendChild(a);a.click();a.remove();toast("Download started.");
+}
+function editDoc(id){
+ const d=docs.find(x=>x.id===id);if(!d)return;
+ openModal("Edit document metadata",`<form id="editDocForm"><div class="field"><label>Document name</label><input name="name" value="${esc(d.name)}" maxlength="150" required></div><div class="form-row"><div class="field"><label>Category</label><select name="category">${["Medical Report","Medical Bill","Prescription","Lab Report","Scan Report","Other"].map(x=>`<option ${x===d.category?"selected":""}>${x}</option>`).join("")}</select></div><div class="field"><label>Document date</label><input name="date" type="date" max="${today()}" value="${esc(d.date)}" required></div></div><div class="field"><label>Treatment episode</label><input name="treatment" value="${esc(d.treatment)}" maxlength="100" placeholder="e.g. General health review"></div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary">Save changes</button></div></form>`);
+ $("editDocForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.target);const date=f.get("date");if(date>today()){toast("Document date cannot be in the future.","error");return}Object.assign(d,{name:String(f.get("name")).trim(),category:f.get("category"),date,treatment:String(f.get("treatment")).trim()});if(!save("docs",docs))return;save("docs",docs);logActivity("Updated document: "+d.name);closeModal();renderVault();renderOverview();renderExpenses();renderProfile();toast("Document metadata updated.")});
+}
+function deleteDoc(id){
+ const d=docs.find(x=>x.id===id);if(!d)return;
+ openModal("Delete document?",`<p class="small-muted">Delete <strong>${esc(d.name)}</strong> from your local vault? Any expense linked to this document will keep its transaction record but lose the document link.</p><div class="form-actions"><button class="btn" onclick="closeModal()">Keep document</button><button class="btn btn-danger" onclick="confirmDeleteDoc('${id}')">Delete document</button></div>`);
+}
+function confirmDeleteDoc(id){const d=docs.find(x=>x.id===id);docs=docs.filter(x=>x.id!==id);expenses=expenses.map(e=>e.documentId===id?{...e,documentId:""}:e);save("docs",docs);save("expenses",expenses);if(d)logActivity("Deleted document: "+d.name);closeModal();renderVault();renderExpenses();renderOverview();renderProfile();toast("Document removed.")}
+function expenseFormHTML(e={}){
+ return `<form id="expenseForm"><div class="form-row"><div class="field"><label>Expense date</label><input name="date" type="date" value="${esc(e.date||today())}" max="${today()}" required></div><div class="field"><label>Category</label><select name="category" required>${categories.map(c=>`<option ${c===(e.category||"Consultation")?"selected":""}>${c}</option>`).join("")}</select></div></div><div class="field"><label>Description</label><input name="description" maxlength="120" value="${esc(e.description||"")}" placeholder="e.g. Pharmacy receipt" required></div><div class="form-row"><div class="field"><label>Amount (₹)</label><input name="amount" type="number" min="0.01" max="100000000" step="0.01" value="${e.amount??""}" required></div><div class="field"><label>Treatment episode</label><input name="treatment" maxlength="100" value="${esc(e.treatment||"")}" placeholder="e.g. General health review" required></div></div><div class="field"><label>Link a document (optional)</label><select name="documentId"><option value="">No linked document</option>${docs.map(d=>`<option value="${d.id}" ${d.id===e.documentId?"selected":""}>${esc(d.name)}</option>`).join("")}</select></div><p class="small-muted">Only enter amounts from actual bills if you want to record real spending. Demo cost examples are shown separately.</p><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary">${e.id?"Save changes":"Add expense"}</button></div></form>`;
+}
+function openExpenseModal(id){const e=id?expenses.find(x=>x.id===id):null;openModal(e?"Edit expense":"Record an expense",expenseFormHTML(e||{}));$("expenseForm").addEventListener("submit",ev=>{ev.preventDefault();const f=new FormData(ev.target),amount=Number(f.get("amount")),date=String(f.get("date"));if(!Number.isFinite(amount)||amount<=0||amount>100000000){toast("Enter a valid positive expense amount.","error");return}if(date>today()){toast("Expense date cannot be in the future.","error");return}const obj={id:e?e.id:uid(),date,category:f.get("category"),description:String(f.get("description")).trim(),amount,treatment:String(f.get("treatment")).trim(),documentId:String(f.get("documentId")||"")};if(!obj.description||!obj.treatment){toast("Complete the required fields.","error");return}if(e)expenses=expenses.map(x=>x.id===e.id?obj:x);else expenses.unshift(obj);if(!save("expenses",expenses))return;logActivity((e?"Updated":"Added")+" expense: "+obj.description);closeModal();renderExpenses();renderOverview();renderProfile();renderReportInsights();toast(e?"Expense updated.":"Expense recorded.");if(preferences.expenseNotifications)toast("Remember: a saved transaction is not a medical cost prediction.","warning")})}
+function filteredExpenses(){
+ const q=$("expenseSearch").value.toLowerCase(),cat=$("expenseCategory").value,from=$("expenseFrom").value,to=$("expenseTo").value;
+ return expenses.filter(e=>(!cat||e.category===cat)&&(!from||e.date>=from)&&(!to||e.date<=to)&&[e.description,e.treatment,e.category].join(" ").toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date))
+}
+function renderExpenses(){
+ const list=filteredExpenses(),total=list.reduce((a,e)=>a+e.amount,0),sums={};list.forEach(e=>sums[e.category]=(sums[e.category]||0)+e.amount);
+ $("totalSpend").textContent=money(total);$("totalTransactions").textContent=list.length;
+ const best=Object.entries(sums).sort((a,b)=>b[1]-a[1])[0];$("highestCategory").textContent=best?best[0]:"—";$("averageSpend").textContent=money(list.length?total/list.length:0);
+ $("expenseTable").innerHTML=list.length?`<table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Treatment</th><th>Amount</th><th>Actions</th></tr></thead><tbody>${list.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${esc(e.description)}${e.documentId?' <span class="badge badge-blue">Linked</span>':""}</td><td>${esc(e.category)}</td><td>${esc(e.treatment)}</td><td class="amount">${money(e.amount)}</td><td><button class="icon-btn" onclick="openExpenseModal('${e.id}')">Edit</button> <button class="icon-btn" onclick="deleteExpense('${e.id}')">×</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty">No expenses match these filters.<br>Try another filter or add a transaction.</div>';
+ renderCategoryChart(sums);renderMonthlyChart();renderReportInsights();
+}
+function deleteExpense(id){const e=expenses.find(x=>x.id===id);if(!e)return;openModal("Delete expense?",`<p class="small-muted">Remove <strong>${esc(e.description)}</strong> (${money(e.amount)}) from your records?</p><div class="form-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="confirmDeleteExpense('${id}')">Delete</button></div>`)}
+function confirmDeleteExpense(id){expenses=expenses.filter(e=>e.id!==id);save("expenses",expenses);logActivity("Deleted an expense record");closeModal();renderExpenses();renderOverview();renderProfile();toast("Expense deleted.")}
+function renderCategoryChart(sums){
+ const entries=Object.entries(sums).sort((a,b)=>b[1]-a[1]),max=Math.max(...entries.map(x=>x[1]),1);
+ $("categoryChart").innerHTML=entries.length?entries.map(([k,v])=>`<div class="bar-row"><span class="bar-label">${esc(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><span class="bar-value">${money(v)}</span></div>`).join(""):'<div class="empty">Record expenses to build your category chart.</div>';
+}
+function renderMonthlyChart(){
+ const now=new Date(),months=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),label:d.toLocaleDateString("en-IN",{month:"short"}),value:0})}
+ expenses.forEach(e=>{const m=months.find(x=>x.key===e.date.slice(0,7));if(m)m.value+=e.amount});
+ const max=Math.max(...months.map(m=>m.value),1);
+ $("monthlyChart").innerHTML='<div style="display:flex;align-items:flex-end;gap:10px;height:180px;padding-top:20px">'+months.map(m=>`<div style="flex:1;min-width:0;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:7px"><span style="font-size:9px;color:var(--muted)">${m.value?money(m.value):"—"}</span><div title="${esc(m.label)}: ${money(m.value)}" style="height:${Math.max(m.value/max*100,m.value?5:2)}%;min-height:3px;background:${m.value?"#087f80":"#e7eff0"};border-radius:5px 5px 0 0"></div><span style="font-size:10px;color:var(--muted)">${m.label}</span></div>`).join("")+'</div>';
+}
+function renderReportInsights(){
+ const id=$("linkedReport").value,d=docs.find(x=>x.id===id),mode=$("insightMode").value;
+ if(!d){$("reportInsights").innerHTML='<div class="empty">Select a saved document to explore associated expense records.</div>';return}
+ const related=expenses.filter(e=>e.documentId===id);
+ let html=`<div class="notice info-notice"><strong>${esc(d.name)}</strong><br>${esc(d.category)} · ${fmtDate(d.date)}<br>This document has not been automatically diagnosed or medically interpreted. No OCR or clinical analysis is connected.</div>`;
+ html+='<div class="grid grid-3 section-gap"><div class="card metric"><div class="metric-label">LINKED TRANSACTIONS</div><div class="metric-value">'+related.length+'</div></div><div class="card metric"><div class="metric-label">RECORDED AMOUNT</div><div class="metric-value">'+money(related.reduce((a,e)=>a+e.amount,0))+'</div></div><div class="card metric"><div class="metric-label">DOCUMENT CATEGORY</div><div style="font-size:13px;font-weight:800;margin-top:17px">'+esc(d.category)+'</div></div></div>';
+ html+=related.length?'<h3 style="margin-top:20px">Linked actual transactions</h3>'+related.map(e=>`<div class="setting-row"><div><p>${esc(e.description)}</p><small>${esc(e.category)} · ${fmtDate(e.date)}</small></div><strong>${money(e.amount)}</strong></div>`).join(""):'<div class="empty">No expenses are linked to this document yet.<br><button class="btn btn-small" onclick="openExpenseModal()">＋ Record a billed expense</button></div>';
+ if(mode==="illustrative"){
+ const keyword=(d.name+" "+d.treatment).toLowerCase();
+ let groups=[];
+ if(/cancer|oncology|tumou?r|biopsy|pathology/.test(keyword))groups=["Oncology consultation (if indicated by clinician)","Laboratory tests (if ordered)","Imaging or pathology (if ordered)","Prescribed medicines (as advised)","Follow-up consultation"];
+ else if(/diabetes|glucose|thyroid|hypo|hyperlipid/.test(keyword))groups=["Clinical consultation","Blood tests (if ordered)","Prescribed medicines (as advised)","Follow-up consultation"];
+ else groups=["Consultation (if needed)","Laboratory tests (if ordered)","Imaging (if ordered)","Medicines (if prescribed)","Follow-up (if advised)"];
+ html+='<div class="card section-gap"><div class="card-head"><div><h3>Possible cost categories to ask about</h3><p>Educational checklist only — not a predicted bill or treatment recommendation.</p></div></div>'+groups.map((x,i)=>`<div class="setting-row"><div><p>${esc(x)}</p><small>Ask your clinician whether this is appropriate and request a provider quotation.</small></div><span class="badge">Price unknown</span></div>`).join("")+'<p class="footer-note">No amounts are estimated here. The document filename or treatment label does not establish a diagnosis or indicate that any listed service is needed.</p></div>';
+ }
+ $("reportInsights").innerHTML=html;
+}
+function exportCSV(){
+ const list=filteredExpenses();if(!list.length){toast("There are no matching transactions to export.","warning");return}
+ const fields=["date","category","description","treatment","amount","documentId"];
+ const csv=[fields.join(","),...list.map(e=>fields.map(k=>'"'+String(e[k]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");
+ downloadBlob(csv,"caresync-expenses.csv","text/csv;charset=utf-8");toast("Expense CSV exported.");
+}
+function downloadBlob(content,name,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function renderTermsChips(){$("termChips").innerHTML=["hypertension","hypothyroidism","hyperlipidemia","anemia","diabetes","cancer","biopsy","MRI","CBC","cholesterol","glucose","ECG"].map(t=>`<button class="term-chip" onclick="showTerm('${t}')">${esc(t)}</button>`).join("")}
+function showTerm(query){
+ const key=query.trim().toLowerCase().replace(/\s+/g," "),t=terms[key]||Object.values(terms).find(x=>x.title.toLowerCase()===key);
+ if(!t){$("termResult").innerHTML=`<div class="term-result"><h3>Term not found in the local guide</h3><p>We don't have a verified definition for “${esc(query)}” in this offline demo. Check the spelling and the surrounding report context, or ask your healthcare professional to explain it.</p><p>Do not assume an unfamiliar abbreviation has only one meaning.</p></div>`;return}
+ $("termResult").innerHTML=`<div class="term-result"><span class="badge badge-green">GENERAL EDUCATION</span><h3 style="margin-top:12px">${esc(t.title)}</h3><p><strong>Pronunciation:</strong> ${esc(t.pron)}</p><h4>Plain English</h4><p>${esc(t.en)}</p><h4>தமிழில் எளிய விளக்கம்</h4><p>${esc(t.ta)}</p><h4>Why it may appear in a report</h4><p>${esc(t.why)}</p><h4>Example</h4><p>${esc(t.example)}</p><h4>Question to ask your doctor</h4><p>${esc(t.ask)}</p><p class="footer-note">This is general education, not a diagnosis or an interpretation of your personal report.</p></div>`;
+}
+$("termForm").addEventListener("submit",e=>{e.preventDefault();showTerm($("termInput").value)});
+function searchMedicine(){
+ const q=$("medicineInput").value.trim().toLowerCase();if(!q){toast("Enter a medicine's exact generic name.","error");return}
+ const m=medicines[q];
+ if(!m){$("medicineResult").innerHTML=`<div class="term-result"><span class="badge badge-orange">NOT VERIFIED</span><h3 style="margin-top:12px">Medicine not identified</h3><p>“${esc(q)}” is not in this limited offline demonstration guide. Brand names, strengths and formulations can differ. Confirm the exact name on the package or prescription with a pharmacist.</p><p>No dose, contraindication list or personalized recommendation has been generated.</p><p><a href="https://medlineplus.gov/druginformation.html" target="_blank" rel="noopener noreferrer" style="color:var(--teal)">Visit MedlinePlus drug information ↗</a></p></div>`;return}
+ $("medicineResult").innerHTML=`<div class="term-result"><span class="badge badge-blue">OFFLINE GENERAL GUIDE</span><h3 style="margin-top:12px">${esc(m.name)}</h3><h4>Common uses</h4><p>${esc(m.info)}</p><h4>Important safety information</h4><p>${esc(m.warning)}</p><h4>Ask your pharmacist</h4><p>${esc(m.ask)}</p><p class="footer-note">This is a brief educational summary, not an official live label. No dosage is provided. Verify the exact product and current official patient information.</p><p><a href="https://medlineplus.gov/druginformation.html" target="_blank" rel="noopener noreferrer" style="color:var(--teal)">MedlinePlus drug information ↗</a> · <a href="https://dailymed.nlm.nih.gov/dailymed/" target="_blank" rel="noopener noreferrer" style="color:var(--teal)">DailyMed official labels ↗</a></p></div>`;
+}
+const availableTimes=doctor=>doctor.availability;
+function renderDoctors(){
+ const q=$("doctorSearch").value.toLowerCase(),sp=$("doctorSpecialty").value,sort=$("doctorSort").value;
+ let list=seedDoctors.filter(d=>(!sp||d.specialty===sp)&&[d.name,d.specialty,d.location].join(" ").toLowerCase().includes(q));
+ if(sort==="fee")list.sort((a,b)=>a.fee-b.fee);if(sort==="experience")list.sort((a,b)=>b.experience-a.experience);
+ $("doctorList").innerHTML=list.length?list.map(d=>`<article class="doctor-card"><div class="doctor-top"><div class="doctor-avatar">${esc(d.initials)}</div><div><h3>${esc(d.name)}</h3><p>${esc(d.specialty)}</p><span class="badge badge-blue">Demo profile</span></div></div><div class="doctor-meta"><span>♧ ${d.experience} years' experience</span><span>⌖ ${esc(d.location)}</span><span>◷ ${d.availability.length} sample slots/day</span></div><div class="doctor-bottom"><div class="doctor-fee">${money(d.fee)} <small>/ consultation</small></div><button class="btn btn-primary btn-small" onclick="bookDoctor('${d.id}')">Book visit →</button></div></article>`).join(""):'<div class="empty" style="grid-column:1/-1">No doctors match your search.<br>Try a different specialty or location.</div>';
+}
+function bookedAt(did,date,time,excludeId=""){return appointments.some(a=>a.id!==excludeId&&a.doctorId===did&&a.date===date&&a.time===time&&a.status==="Upcoming")}
+function bookDoctor(id){
+ const d=seedDoctors.find(x=>x.id===id);if(!d)return;
+ const minDate=today();
+ openModal("Book a demo appointment",`<div class="doctor-top" style="margin-bottom:20px"><div class="doctor-avatar">${esc(d.initials)}</div><div><h3>${esc(d.name)}</h3><p>${esc(d.specialty)} · ${esc(d.location)}</p><span class="badge badge-blue">Simulated availability</span></div></div><form id="bookForm"><div class="field"><label>Appointment date</label><input name="date" type="date" min="${minDate}" required></div><div class="field"><label>Available time</label><select name="time" required>${d.availability.map(t=>`<option>${t}</option>`).join("")}</select></div><div class="field"><label>Reason for visit (optional)</label><input name="reason" maxlength="120" placeholder="e.g. Routine consultation"></div><div class="notice info-notice">Demo booking only. No clinic is contacted and no real appointment is confirmed.</div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary">Confirm demo booking</button></div></form>`);
+ $("bookForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.target),date=String(f.get("date")),time=String(f.get("time"));if(date<today()){toast("Choose today or a future date.","error");return}if(!d.availability.includes(time)){toast("Choose an available sample time.","error");return}if(bookedAt(id,date,time)){toast("That demo slot is already booked. Choose another time.","error");return}appointments.unshift({id:uid(),doctorId:id,doctor:d.name,specialty:d.specialty,fee:d.fee,date,time,reason:String(f.get("reason")).trim(),status:"Upcoming",demo:true});if(!save("appointments",appointments))return;logActivity("Created demo appointment with "+d.name);closeModal();renderAppointments();renderOverview();renderProfile();toast("Demo appointment saved.")});
+}
+function renderAppointments(){
+ const filter=$("apptFilter").value;const upcoming=appointments.filter(a=>a.status==="Upcoming"&&a.date>=today()).length;
+ $("apptUpcoming").textContent=upcoming;$("apptCompleted").textContent=appointments.filter(a=>a.status==="Completed").length;$("apptCancelled").textContent=appointments.filter(a=>a.status==="Cancelled").length;
+ const list=appointments.filter(a=>!filter||a.status===filter).sort((a,b)=>a.date.localeCompare(b.date));
+ $("appointmentList").innerHTML=list.length?'<div class="doc-list">'+list.map(a=>`<div class="doc-item"><div class="file-icon" style="background:#e7f5ef;color:var(--teal)">▦</div><div class="doc-info"><strong>${esc(a.doctor)}</strong><small>${esc(a.specialty)} · ${fmtDate(a.date)} · ${esc(a.time)}<br>${a.reason?"Reason: "+esc(a.reason)+" · ":""}Fee shown: ${money(a.fee)} · Demo only</small><span class="badge ${a.status==="Upcoming"?"badge-green":a.status==="Cancelled"?"badge-red":"badge-blue"}" style="margin-top:7px">${a.status}</span></div><div class="doc-actions">${a.status==="Upcoming"?`<button class="icon-btn" onclick="reschedule('${a.id}')">Reschedule</button><button class="icon-btn" onclick="cancelAppt('${a.id}')">Cancel</button><button class="icon-btn" onclick="completeAppt('${a.id}')">Complete</button>`:""}</div></div>`).join("")+'</div>':'<div class="empty"><div class="empty-icon">▦</div>No appointments in this view.<br><button class="btn btn-small" onclick="go(\'doctors\')">Explore sample doctors</button></div>';
+}
+function reschedule(id){
+ const a=appointments.find(x=>x.id===id);if(!a)return;const d=seedDoctors.find(x=>x.id===a.doctorId);if(!d)return;
+ openModal("Reschedule demo visit",`<form id="rescheduleForm"><div class="field"><label>New date</label><input name="date" type="date" min="${today()}" value="${a.date}" required></div><div class="field"><label>New time</label><select name="time">${d.availability.map(t=>`<option ${t===a.time?"selected":""}>${t}</option>`).join("")}</select></div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary">Save new time</button></div></form>`);
+ $("rescheduleForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.target),date=String(f.get("date")),time=String(f.get("time"));if(date<today()){toast("Choose a valid date.","error");return}if(bookedAt(a.doctorId,date,time,id)){toast("This sample slot is already booked.","error");return}a.date=date;a.time=time;a.status="Upcoming";if(!save("appointments",appointments))return;logActivity("Rescheduled demo appointment with "+a.doctor);closeModal();renderAppointments();renderOverview();toast("Demo appointment rescheduled.")});
+}
+function cancelAppt(id){const a=appointments.find(x=>x.id===id);if(!a)return;openModal("Cancel appointment?",`<p class="small-muted">Cancel your demo visit with <strong>${esc(a.doctor)}</strong> on ${fmtDate(a.date)}?</p><div class="form-actions"><button class="btn" onclick="closeModal()">Keep appointment</button><button class="btn btn-danger" onclick="confirmCancel('${id}')">Cancel appointment</button></div>`)}
+function confirmCancel(id){const a=appointments.find(x=>x.id===id);if(a)a.status="Cancelled";save("appointments",appointments);logActivity("Cancelled demo appointment");closeModal();renderAppointments();renderOverview();toast("Demo appointment cancelled.")}
+function completeAppt(id){const a=appointments.find(x=>x.id===id);if(!a)return;openModal("Mark demo visit complete?",`<p class="small-muted">Mark the demo appointment with <strong>${esc(a.doctor)}</strong> as completed?</p><div class="form-actions"><button class="btn" onclick="closeModal()">Back</button><button class="btn btn-primary" onclick="confirmComplete('${id}')">Mark complete</button></div>`)}
+function confirmComplete(id){const a=appointments.find(x=>x.id===id);if(a)a.status="Completed";save("appointments",appointments);logActivity("Marked demo appointment complete");closeModal();renderAppointments();renderOverview();toast("Appointment marked completed in demo records.")}
+function renderProfile(){
+ const initials=(profile.name.trim().split(/\s+/).map(x=>x[0]).join("").slice(0,2)||"PS").toUpperCase();
+ $("profileAvatar").textContent=initials;$("topAvatar").textContent=initials;$("profileDisplayName").textContent=profile.name||"Patient";
+ $("profileName").value=profile.name;$("profileEmail").value=profile.email;$("profilePhone").value=profile.phone;$("profileCity").value=profile.city;$("profileLanguage").value=profile.language;
+ $("profileDocs").textContent=docs.length;$("profileExpenses").textContent=money(expenses.reduce((s,e)=>s+e.amount,0));$("profileAppts").textContent=appointments.length;$("profileTreatments").textContent=uniqueTreatments();
+ $("activityList").innerHTML=activities.length?activities.slice(0,12).map(a=>`<div class="setting-row"><div><p>${esc(a.text)}</p><small>${new Date(a.date).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}</small></div><span class="badge">Local</span></div>`).join(""):'<div class="empty">No recent activity.</div>';
+}
+$("profileForm").addEventListener("submit",e=>{e.preventDefault();const name=$("profileName").value.trim();if(!name){toast("Enter a name.","error");return}profile={name,email:$("profileEmail").value.trim(),phone:$("profilePhone").value.trim(),city:$("profileCity").value.trim(),language:$("profileLanguage").value};if(profile.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)){toast("Enter a valid email address.","error");return}if(!save("profile",profile))return;logActivity("Updated patient profile");renderProfile();renderOverview();toast("Profile saved locally.")});
+function renderSettings(){
+ $("reminderSwitch").classList.toggle("on",preferences.reminders);$("expenseSwitch").classList.toggle("on",preferences.expenseNotifications);$("settingsLanguage").value=preferences.language;
+}
+function togglePref(key,button){preferences[key]=!preferences[key];save("preferences",preferences);button.classList.toggle("on",preferences[key]);toast((preferences[key]?"Enabled ":"Disabled ")+key.replace(/([A-Z])/g," $1").toLowerCase()+".")}
+$("reminderSwitch").addEventListener("click",()=>togglePref("reminders",$("reminderSwitch")));
+$("expenseSwitch").addEventListener("click",()=>togglePref("expenseNotifications",$("expenseSwitch")));
+$("settingsLanguage").addEventListener("change",e=>{preferences.language=e.target.value;save("preferences",preferences);profile.language=e.target.value;save("profile",profile);$("profileLanguage").value=profile.language;toast("Language preference saved. The current demo interface remains in English.")});
+function exportData(){downloadBlob(JSON.stringify({exportedAt:new Date().toISOString(),mode:"local-demo",profile,expenses,documents:docs.map(({data,...d})=>d),appointments,activities},null,2),"caresync-demo-export.json","application/json");toast("Demo records exported. Document file contents are excluded.")}
+function resetDemo(){openModal("Restore sample data?",'<p class="small-muted">Replace your saved expenses and documents with the original sample dataset and remove demo appointments? Your profile will be retained.</p><div class="form-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="confirmReset()">Restore sample data</button></div>')}
+function confirmReset(){expenses=structuredClone(seedExpenses);docs=structuredClone(seedDocs);appointments=[];save("expenses",expenses);save("docs",docs);save("appointments",appointments);logActivity("Restored sample records");closeModal();refreshAll();toast("Sample records restored.")}
+function clearData(){openModal("Clear local records?",'<div class="notice">This removes saved documents, expenses, and appointments from this browser. This action cannot be undone.</div><div class="form-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="confirmClear()">Clear records</button></div>')}
+function confirmClear(){expenses=[];docs=[];appointments=[];activities=[];["expenses","docs","appointments","activities"].forEach(k=>localStorage.removeItem("caresync_"+k));logActivity("Local records cleared");closeModal();refreshAll();toast("Local records cleared.")}
+function refreshAll(){renderOverview();renderVault();renderExpenses();renderDoctors();renderAppointments();renderProfile();renderSettings()}
+["expenseSearch","expenseCategory","expenseFrom","expenseTo"].forEach(id=>$(id).addEventListener("input",renderExpenses));
+["doctorSearch","doctorSpecialty","doctorSort"].forEach(id=>$(id).addEventListener("input",renderDoctors));
+$("apptFilter").addEventListener("change",renderAppointments);
+$("linkedReport").addEventListener("change",renderReportInsights);$("insightMode").addEventListener("change",renderReportInsights);
+renderTermsChips();
+refreshAll();
+</script>
+</body>
+</html>
+/* ===============================
+   FIX 1: MEDICAL BILL UPLOAD
+   Replace the existing upload event handlers with this code.
+================================ */
+
+let chosen = null;
+
+const fileInput = document.getElementById("file");
+const chooseButton = document.getElementById("choose");
+const saveBillButton = document.getElementById("saveBill");
+const dropArea = document.getElementById("drop");
+
+chooseButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", function () {
+    const selectedFile = fileInput.files && fileInput.files[0];
+
+    if (!selectedFile) return;
+
+    selectFile(selectedFile);
+});
+
+async function selectFile(file) {
+    const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        toast("Please select a PDF, JPG, PNG or WEBP file.");
+        fileInput.value = "";
+        return;
+    }
+
+    if (file.size > 12 * 1024 * 1024) {
+        toast("File size must be less than 12 MB.");
+        fileInput.value = "";
+        return;
+    }
+
+    chosen = file;
+
+    document.getElementById("fileStatus").textContent =
+        "Selected: " + file.name + " — ready to save.";
+
+    document.getElementById("billAmount").value = "";
+    document.getElementById("billPatient").value = pname();
+
+    try {
+        const extractedText = await readText(file);
+        const amount = parseAmount(extractedText);
+        const date = parseDate(extractedText);
+
+        if (amount !== null) {
+            document.getElementById("billAmount").value = amount;
+        }
+
+        if (date) {
+            document.getElementById("billDate").value = date;
+        }
+
+        document.getElementById("fileStatus").textContent =
+            file.name + " — " +
+            (amount !== null
+                ? "Amount detected: ₹" + amount + ". Please verify."
+                : "File ready. Total amount was not detected.");
+    } catch (error) {
+        console.error("Document reading error:", error);
+
+        document.getElementById("fileStatus").textContent =
+            file.name + " — selected and ready to save.";
+    }
+}
+
+dropArea.addEventListener("dragover", function (event) {
+    event.preventDefault();
+});
+
+dropArea.addEventListener("drop", function (event) {
+    event.preventDefault();
+
+    const file = event.dataTransfer.files[0];
+
+    if (file) {
+        selectFile(file);
+    }
+});
+
+saveBillButton.addEventListener("click", async function (event) {
+    event.preventDefault();
+
+    if (!chosen) {
+        toast("Please choose a document before saving.");
+        fileInput.click();
+        return;
+    }
+
+    const fileToSave = chosen;
+    const amountValue = document.getElementById("billAmount").value.trim();
+
+    const amount =
+        amountValue !== "" &&
+        Number.isFinite(Number(amountValue)) &&
+        Number(amountValue) >= 0
+            ? Number(amountValue)
+            : null;
+
+    try {
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("File reading failed"));
+
+            reader.readAsDataURL(fileToSave);
+        });
+
+        const bill = {
+            id: crypto.randomUUID
+                ? crypto.randomUUID()
+                : String(Date.now()),
+
+            name: fileToSave.name,
+            type: fileToSave.type,
+            size: fileToSave.size,
+            data: dataUrl,
+
+            patient:
+                document.getElementById("billPatient").value.trim() ||
+                pname() ||
+                "Patient",
+
+            date: document.getElementById("billDate").value,
+            category: document.getElementById("category").value,
+            amount: amount,
+            notes: document.getElementById("notes").value.trim(),
+            created: Date.now()
+        };
+
+        await put(bill);
+
+        chosen = null;
+        fileInput.value = "";
+
+        document.getElementById("fileStatus").textContent =
+            "✓ Document saved successfully.";
+
+        document.getElementById("billAmount").value = "";
+        document.getElementById("notes").value = "";
+
+        await refresh();
+        await renderVault();
+        await renderExpenses();
+
+        toast("Medical document saved successfully.");
+    } catch (error) {
+        console.error("Document save error:", error);
+        toast("Could not save. Check browser storage and try again.");
+    }
+});
+
+
+/* ===============================
+   FIX 2: MEDICAL TERM & MEDICINE
+   Replace keyFor() and searchTerm()
+   with these functions.
+================================ */
+
+const medicalAliases = {
+    cancer: "cancer",
+    tumour: "cancer",
+    tumor: "cancer",
+    oncology: "cancer",
+    chemotherapy: "chemotherapy",
+    chemo: "chemotherapy",
+    biopsy: "biopsy",
+    metastasis: "metastasis",
+    malignant: "cancer",
+    benign: "benign",
+    radiotherapy: "radiotherapy",
+    radiation: "radiotherapy",
+    mri: "mri",
+    "ct scan": "ct scan",
+    "computed tomography": "ct scan",
+    xray: "x-ray",
+    "x-ray": "x-ray",
+    ultrasound: "ultrasound",
+    sonography: "ultrasound",
+    hemoglobin: "haemoglobin",
+    haemoglobin: "haemoglobin",
+    cbc: "cbc",
+    "complete blood count": "cbc",
+    creatinine: "creatinine",
+    cholesterol: "hyperlipidemia",
+    hypertension: "hypertension",
+    "high blood pressure": "hypertension",
+    diabetes: "diabetes",
+    "blood sugar": "diabetes",
+    anemia: "anemia",
+    anaemia: "anemia",
+    fever: "fever",
+    paracetamol: "paracetamol",
+    acetaminophen: "paracetamol",
+    dolo: "paracetamol",
+    crocin: "paracetamol",
+    ibuprofen: "ibuprofen",
+    cetirizine: "cetirizine",
+    amoxicillin: "amoxicillin",
+    metformin: "metformin",
+    amlodipine: "amlodipine",
+    atorvastatin: "atorvastatin",
+    ors: "orsalts",
+    dehydration: "dehydration",
+    asthma: "asthma",
+    hypothyroidism: "hypothyroidism",
+    hyperlipidemia: "hyperlipidemia",
+    "acid reflux": "acidreflux"
+};
+
+function keyFor(query) {
+    const q = query.toLowerCase().trim().replace(/\s+/g, " ");
+
+    if (!q) return null;
+
+    if (data[q]) return q;
+
+    const directKey = Object.keys(data).find(key =>
+        key.toLowerCase() === q
+    );
+
+    if (directKey) return directKey;
+
+    const exactName = Object.keys(data).find(key =>
+        data[key].name.toLowerCase() === q
+    );
+
+    if (exactName) return exactName;
+
+    const aliasKey = medicalAliases[q];
+
+    if (aliasKey && data[aliasKey]) return aliasKey;
+
+    const matchedAlias = Object.keys(medicalAliases).find(alias =>
+        q.includes(alias) || alias.includes(q)
+    );
+
+    if (matchedAlias && data[medicalAliases[matchedAlias]]) {
+        return medicalAliases[matchedAlias];
+    }
+
+    return Object.keys(data).find(key => {
+        const name = data[key].name.toLowerCase();
+
+        return name.includes(q) || q.includes(name);
+    }) || null;
+}
+
+function searchTerm() {
+    const query = document.getElementById("termSearch").value.trim();
+
+    if (!query) {
+        toast("Enter a medical term or medicine name.");
+        return;
+    }
+
+    const key = keyFor(query);
+
+    if (key && data[key]) {
+        showTerm(key);
+        return;
+    }
+
+    const tamil = language === "ta";
+
+    document.getElementById("termResult").innerHTML = `
+        <div class="resulttop">
+            <div>
+                <h2>${esc(query)}</h2>
+                <p>${tamil
+                    ? "இந்தச் சொல்லுக்கான விளக்கம்"
+                    : "Medical term information"}</p>
+            </div>
+            <span class="badge">Needs verification</span>
+        </div>
+
+        <div class="infogrid">
+            <div class="infoblock full">
+                <h4>${tamil ? "என்ன அர்த்தம்?" : "What does it mean?"}</h4>
+                <p>${tamil
+                    ? "இந்தச் சொல் தற்போதைய மருத்துவ வழிகாட்டியில் இல்லை. சரியான spelling அல்லது முழுப் பெயரை உள்ளிடவும். மருந்து அல்லது நோயைப் பற்றிய உறுதியான தகவலுக்கு மருத்துவர் அல்லது மருந்தாளரிடம் கேளுங்கள்."
+                    : "This term is not yet available in the built-in medical guide. Try the full medical name or check the spelling. Ask a doctor or pharmacist to verify unfamiliar medical terms."}</p>
+            </div>
+
+            <div class="infoblock dose">
+                <h4>${tamil ? "மருந்துப் பாதுகாப்பு" : "Medicine safety"}</h4>
+                <p>${tamil
+                    ? "பெயரை மட்டும் வைத்து மருந்தளவைத் தீர்மானிக்க முடியாது. மருத்துவர் பரிந்துரை அல்லது மருந்துப் பெட்டியின் வழிமுறைகளைப் பின்பற்றவும்."
+                    : "Do not choose a medicine dose based on a name alone. Follow the prescription or exact product label."}</p>
+            </div>
+        </div>
+    `;
+}
+
+document.getElementById("searchTerm").onclick = searchTerm;
+
+document.getElementById("termSearch").onkeydown = function (event) {
+    if (event.key === "Enter") searchTerm();
+};
+
+
+/* Add these entries inside your existing data = { ... } object.
+   They allow the medical guide to explain common report terms. */
+
+data.cancer = entry(
+    "Cancer",
+    "Medical term",
+    "Cancer is a group of diseases in which abnormal cells grow uncontrollably. The type and stage determine treatment.",
+    "புற்றுநோய் என்பது சில செல்கள் கட்டுப்பாடின்றி வளரக்கூடிய நோய்களின் தொகுப்பாகும். அதன் வகை மற்றும் நிலையைப் பொறுத்து சிகிச்சை மாறும்.",
+    "Treatment may include surgery, chemotherapy, radiotherapy, immunotherapy or other care, depending on the diagnosis.",
+    "நோயறிதலைப் பொறுத்து அறுவை சிகிச்சை, கீமோதெரபி, கதிர்வீச்சு சிகிச்சை அல்லது பிற சிகிச்சைகள் இருக்கலாம்.",
+    "Side effects depend on the cancer type and treatment.",
+    "பக்கவிளைவுகள் புற்றுநோய் வகை மற்றும் சிகிச்சையைப் பொறுத்து மாறும்.",
+    "Treatment and monitoring must be planned by the patient's cancer-care team.",
+    "சிகிச்சை மற்றும் கண்காணிப்பை புற்றுநோய் சிகிச்சைக் குழு திட்டமிட வேண்டும்.",
+    "There is no single medicine or dose for cancer. Follow the oncology team's prescription.",
+    "புற்றுநோய்க்கு ஒரே மருந்தோ dose-ஓ கிடையாது. மருத்துவர் வழங்கிய சிகிச்சைத் திட்டத்தைப் பின்பற்றவும்.",
+    "Ask the treating team about the exact diagnosis, treatment options, costs and urgent symptoms.",
+    "சரியான நோயறிதல், சிகிச்சைத் தேர்வுகள், செலவுகள் மற்றும் அவசர அறிகுறிகள் பற்றி மருத்துவரிடம் கேளுங்கள்."
+);
+
+data.chemotherapy = entry(
+    "Chemotherapy",
+    "Medical term",
+    "Chemotherapy uses medicines to kill cancer cells or slow their growth. The medicine and schedule depend on the cancer and treatment plan.",
+    "கீமோதெரபி என்பது புற்றுநோய் செல்களை அழிக்க அல்லது அவற்றின் வளர்ச்சியை மெதுவாக்க மருந்துகளைப் பயன்படுத்தும் சிகிச்சை.",
+    "It may be used alone or with surgery, radiotherapy or other cancer treatments.",
+    "இது தனியாகவோ அறுவை சிகிச்சை, கதிர்வீச்சு சிகிச்சை அல்லது பிற சிகிச்சைகளுடனோ பயன்படுத்தப்படலாம்.",
+    "Side effects vary and can include nausea, fatigue, hair loss or changes in blood counts.",
+    "பக்கவிளைவுகளில் குமட்டல், சோர்வு, முடி உதிர்தல் அல்லது இரத்த அணுக்களில் மாற்றங்கள் இருக்கலாம்.",
+    "Monitoring and advice depend on the particular medicine and patient.",
+    "குறிப்பிட்ட மருந்து மற்றும் நோயாளியைப் பொறுத்து கண்காணிப்பு தேவைப்படும்.",
+    "Never change cancer medicine doses or schedules without the oncology team.",
+    "புற்றுநோய் மருந்தின் அளவு அல்லது அட்டவணையை மருத்துவரின் ஆலோசனையின்றி மாற்ற வேண்டாம்.",
+    "Contact the treating team promptly about fever or unexpected severe symptoms during treatment.",
+    "சிகிச்சையின்போது காய்ச்சல் அல்லது எதிர்பாராத கடுமையான அறிகுறிகள் ஏற்பட்டால் உடனே சிகிச்சைக் குழுவைத் தொடர்புகொள்ளவும்."
+);
+
+data.biopsy = entry(
+    "Biopsy",
+    "Medical term",
+    "A biopsy is a procedure in which a small sample of tissue or cells is taken for laboratory examination.",
+    "பயாப்ஸி என்பது ஆய்வகப் பரிசோதனைக்காக திசு அல்லது செல்களின் சிறிய மாதிரியை எடுக்கும் செயல்முறை.",
+    "It can help identify the cause of an abnormal area and may be used to investigate suspected cancer.",
+    "அசாதாரண பகுதியின் காரணத்தை அறியவும் புற்றுநோய் சந்தேகத்தை மதிப்பிடவும் உதவும்.",
+    "Temporary soreness or bleeding may occur, depending on the procedure.",
+    "செயல்முறையைப் பொறுத்து தற்காலிக வலி அல்லது இரத்தப்போக்கு ஏற்படலாம்.",
+    "Preparation and aftercare depend on the biopsy type and patient.",
+    "தயாரிப்பு மற்றும் பிந்தைய பராமரிப்பு பயாப்ஸி வகையைப் பொறுத்தது.",
+    "Follow the hospital's preparation and aftercare instructions.",
+    "மருத்துவமனையின் தயாரிப்பு மற்றும் பிந்தைய பராமரிப்பு வழிமுறைகளைப் பின்பற்றவும்.",
+    "Seek medical advice for heavy bleeding, worsening pain or fever after the procedure.",
+    "செயல்முறைக்குப் பிறகு அதிக இரத்தப்போக்கு, அதிகரிக்கும் வலி அல்லது காய்ச்சல் இருந்தால் மருத்துவ ஆலோசனை பெறவும்."
+);
+
+data["ct scan"] = entry(
+    "CT Scan",
+    "Medical term",
+    "A CT scan uses X-rays and computer processing to create detailed images inside the body.",
+    "CT ஸ்கேன் X-கதிர்கள் மற்றும் கணினி செயலாக்கத்தைப் பயன்படுத்தி உடலின் உள்ளகப் படங்களை உருவாக்குகிறது.",
+    "It helps clinicians examine organs, bones and other structures.",
+    "உறுப்புகள், எலும்புகள் மற்றும் பிற பகுதிகளை மதிப்பிட உதவுகிறது.",
+    "Some scans use contrast dye, which may require extra precautions.",
+    "சில ஸ்கேன்களில் contrast dye பயன்படுத்தப்படும்; கூடுதல் முன்னெச்சரிக்கை தேவைப்படலாம்.",
+    "Tell the care team about pregnancy, allergies and kidney problems when relevant.",
+    "தேவையானபோது கர்ப்பம், ஒவ்வாமை மற்றும் சிறுநீரகப் பிரச்சினைகளை மருத்துவக் குழுவிடம் தெரிவிக்கவும்.",
+    "Follow the imaging centre's instructions; this is a test, not a medicine.",
+    "ஸ்கேன் மையத்தின் வழிமுறைகளைப் பின்பற்றவும்; இது பரிசோதனை, மருந்து அல்ல.",
+    "Ask the imaging team if you are unsure about contrast or preparation.",
+    "contrast அல்லது தயாரிப்பு பற்றி சந்தேகம் இருந்தால் ஸ்கேன் குழுவிடம் கேளுங்கள்."
+);
+
+data.mri = entry(
+    "MRI Scan",
+    "Medical term",
+    "MRI uses a strong magnetic field and radio waves to produce detailed images of the body.",
+    "MRI வலுவான காந்தப்புலம் மற்றும் radio waves மூலம் உடலின் விரிவான படங்களை உருவாக்குகிறது.",
+    "It helps examine soft tissues, organs and other structures.",
+    "மென்மையான திசுக்கள், உறுப்புகள் மற்றும் பிற பகுதிகளைப் பரிசோதிக்க உதவுகிறது.",
+    "The scan can be noisy and may feel confined.",
+    "ஸ்கேன் சத்தமாக இருக்கலாம்; குறுகிய இடத்தில் இருப்பது போல உணரலாம்.",
+    "Tell the team about implants, metal fragments or a possible pregnancy.",
+    "உடலில் உள்ள implants, உலோகத் துண்டுகள் அல்லது கர்ப்ப வாய்ப்பு பற்றி குழுவிடம் தெரிவிக்கவும்.",
+    "Follow the scan centre's instructions; this is a test, not a medicine.",
+    "ஸ்கேன் மையத்தின் வழிமுறைகளைப் பின்பற்றவும்; இது பரிசோதனை, மருந்து அல்ல.",
+    "Ask the imaging team before the scan if you have a medical device or implant.",
+    "மருத்துவ சாதனம் அல்லது implant இருந்தால் ஸ்கேன் முன் குழுவிடம் கேளுங்கள்."
+);
